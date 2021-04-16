@@ -1,6 +1,7 @@
 //set dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const { start } = require('node:repl');
 
 //create db connection
 const connection = mysql.createConnection({
@@ -14,9 +15,8 @@ const connection = mysql.createConnection({
 
 
 
-
 //start db connection
 connection.connect((err) => {
     if (err) throw err;
-    //put function here
+    startMenu()
 })

@@ -23,3 +23,7 @@ CREATE TABLE department (
     name varchar(30),
     primary key (id)
 );
+
+INSERT INTO department (name)
+VALUES ("Sales"), ("Marketing"), ("Engineering"), ("Administration");
+
