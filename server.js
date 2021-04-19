@@ -1,18 +1,15 @@
 //set dependencies
-const mysql = require('mysql');
-const inquirer = require('inquirer');
-const { start } = require('node:repl');
+const express = require('express');
+const routes = require('./routes');
+const connection = require('./config/connection');
 
-//create db connection
-const connection = mysql.createConnection({
-    host: 'localhost', 
-    port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
-});
+const app = express();
+const PORT = process.env.port || 3005;
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
+app.use(routes);
 
 
 //start db connection
