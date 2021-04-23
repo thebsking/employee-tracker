@@ -50,7 +50,25 @@ const viewEmployees = () => {
     app.get('/employee')
 }
 
+const viewDepartments = () => {
 
+}
+
+const viewRoles = () => {
+
+}
+
+const addEmployee = () => {
+
+}
+
+const addRole = () => {
+
+}
+
+const addDepartment = () => {
+    
+}
 
 //start connection
 connection.connect((err)=> {
