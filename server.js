@@ -1,6 +1,7 @@
 //set dependencies
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+require('dotenv').config();
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -25,19 +26,19 @@ const mainMenu = () => {
                 viewEmployees();
                 break;
             case 'View all departments':
-                //what to do
+                viewDepartments();
                 break;
             case 'View all roles':
-                //what to do
+                viewRoles();
                 break;
             case 'Add employee':
-                //what to do
+                addEmployee();
                 break;
             case 'Add role':
-                //what to do
+                addRole();
                 break;
             case 'Add department':
-                //what to do
+                addDepartment();
                 break;
             case 'Exit':
                 connection.end()
@@ -47,7 +48,8 @@ const mainMenu = () => {
 }
 
 const viewEmployees = () => {
-    app.get('/employee')
+   const query = 'SELECT * FROM employee';
+
 }
 
 const viewDepartments = () => {
@@ -67,7 +69,7 @@ const addRole = () => {
 }
 
 const addDepartment = () => {
-    
+
 }
 
 //start connection
