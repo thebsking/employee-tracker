@@ -177,6 +177,57 @@ const addDepartment = () => {
         })
 }
 
+const updateRole = async () => {
+
+   connection.query(`SELECT * FROM employee`, async (err, res)=> {
+    const allEmployees = res.map(({id, first_name, last_name}) => (
+        {
+            name: `${first_name} ${last_name}`,
+            value: id
+        }
+    ))
+    
+
+    const whichEmployee = await inquirer
+    .prompt({
+        name: 'employee',
+        type: 'list', 
+        message: `Which employee would you like to update?`,
+        choices: allEmployees
+    })
+
+    const chosenEmployee = whichEmployee.employee;
+
+    connection.query(`SELECT role_id, title FROM roles;`, async (err, res)=> {
+        if(err) throw err;
+        const allRoles = res.map(({id, title}) => (
+            {
+                name: title,
+                value: id
+            }
+        ))
+
+        const chosenRole = await inquirer
+        .prompt({
+            name: 'title',
+            type: 'list',
+            message: `What should the new role be?`,
+            choices: allRoles
+        }) 
+
+        const newRole = chosenRole.title;
+
+        connection.query(`UPDATE employee SET role_id= ? WHERE id= ?`, [newRole, chosenEmployee], async (err, res) => {
+            if(err) throw err;
+            console.log('Employe role updated');
+            mainMenu();
+        })
+    })
+
+
+   })
+}
+
 //start connection
 connection.connect((err) => {
     if (err) throw err;
