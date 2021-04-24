@@ -85,22 +85,52 @@ const viewRoles = () => {
     })
 }
 
-const addEmployee = () => {
-    //get all roles
-    const allRoles = connection.query(`SELECT title FROM roles`, (err, res) => {
-        if (err) throw err;
-        return res.map(({ title }) => {
-            name: title;
-        })
-    })
-    console.log(allRoles);
-    inquirer
+const addEmployee = async () => {
+    const employee = await inquirer
         .prompt([
             { name: 'firstName', message: `What is the employee's first name`, type: 'input' },
-            { name: 'lastName', message: `What is the employee's last name?`, type: 'input' },
-            { name: 'position', message: `What is the employee's role?`, type: 'list', choices: allRoles },
-            { name: 'manager', type: 'list', message: `Who is the employee's manager?`, choices: [] }
-        ])
+            { name: 'lastName', message: `What is the employee's last name?`, type: 'input' }
+        ]);
+
+        connection.query(`SELECT roles.role_id, roles.title, department.name AS department, roles.salary FROM roles LEFT JOIN department ON roles.department_id = department.department_id`, async (err, res)=> {
+            const allRoles = res.map(({id, title})=> ({
+                name: title,
+                value: id,
+            }
+            ))
+            const role = await inquirer
+            .prompt({
+                name: 'role',
+                type: 'list',
+                message: `What is this employee's role?`,
+                choices: allRoles
+            })
+
+            employee.role_id = role.role;
+
+            connection.query(`SELECT first_name, last_name FROM employee`, async (err, res)=> {
+                const allEmployees = res.map(({id, first_name, last_name})=>(
+                    {
+                        name: `${first_name} ${last_name}`,
+                        value: id
+                    }
+                ));
+                const manager = await inquirer
+                .prompt({
+                    name: 'manager',
+                    type: 'list',
+                    message: `Who will this employee report to?`,
+                    choices: allEmployees
+                })
+                employee.manager_id = manager.manager;
+
+                connection.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) Values (?, ?, ?, ?)`, [employee.firstName, employee.lastName, employee.role_id, employee.manager_id], async (err, res) => {
+                    if(err) throw err;
+                    console.log('employee added');
+                    mainMenu();
+                })
+            })
+        }) 
 }
 
 const addRole = async () => {
