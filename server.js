@@ -11,6 +11,7 @@ const connection = mysql.createConnection({
     database: process.env.DB_NAME
 });
 
+
 //inquirer functions
 const mainMenu = () => {
     inquirer
@@ -59,29 +60,81 @@ const viewEmployees = () => {
 
    connection.query(query, (err, res)=> {
        if (err) throw err;
-       console.table(res);
+       console.table(res, );
        mainMenu();
    });
 }
 
 const viewDepartments = () => {
-
+    const query = `SELECT * FROM department`;
+    connection.query(query, (err, res) => {
+        if(err) throw err;
+        console.table(res);
+        mainMenu();
+    })
 }
 
 const viewRoles = () => {
-
+    const query = `SELECT r.role_id, r.title, r.salary, d.name AS department 
+    FROM roles AS r
+    JOIN department AS d ON r.department_id = d.department_id`;
+    connection.query(query, (err, res)=> {
+        if(err) throw err;
+        console.table(res);
+        mainMenu();
+    })
 }
 
-const addEmployee = () => {
-
+ const addEmployee = () => {
+    //get all roles
+const allRoles = connection.query(`SELECT title FROM roles`, (err, res)=>{
+    if(err) throw err;
+    return res.map(({title})=> {
+        name: title;
+    })
+})
+console.log(allRoles);
+    inquirer
+    .prompt([
+        {name: 'firstName', message: `What is the employee's first name`, type: 'input'},
+        {name: 'lastName', message: `What is the employee's last name?`, type: 'input'},
+        {name: 'position', message: `What is the employee's role?`, type: 'list', choices: allRoles},
+        {name: 'manager', type: 'list', message: `Who is the employee's manager?`, choices: []}
+    ])
 }
 
-const addRole = () => {
+const addRole = async () => {
+    const depts = connection.query(`SELECT * FROM department`, (err, res)=>{
+        if(err) throw err;
+        res.map(item =>{
+            const list = {};
+            list[item.department_id] = item.name;
+            return list;
+        });
+    });
+
+    const newRole = await inquirer
+    .prompt({name: 'role', type: 'input', message: `What is the tile of the role you would like to add?`});
+
+    connection.query(`SELECT * FROM department`, async (err, res)=>{
+        const allDepts = res.map(({department_id, name}) => (
+            {name: name, value: department_id}
+        ))
+    })
 
 }
 
 const addDepartment = () => {
-
+    inquirer
+    .prompt({
+        name: 'department',
+        type: 'input',
+        message: 'What is the name of the department you would like to add?'
+    })
+    .then((answer)=>{
+        connection.query(`INSERT INTO department (name) VALUES('${answer.department}')`);
+        mainMenu();
+    })
 }
 
 //start connection
